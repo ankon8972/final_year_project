@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "90641123128",
+    "project_id": "final-year-project-f2053",
+    "storage_bucket": "final-year-project-f2053.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:90641123128:android:c72bbab0dd402e6b48e3cd",
+        "android_client_info": {
+          "package_name": "com.example.final_year_food_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAao3FdEOVq35IhztSMH646xqgrCGOSahI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
