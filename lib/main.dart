@@ -1,3 +1,4 @@
+import 'package:final_year_food_project/dashboard.dart';
 import 'package:final_year_food_project/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -16,6 +17,7 @@ class FoodCart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: LogInScreen(),
     );
   }
