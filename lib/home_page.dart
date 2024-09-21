@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:final_year_food_project/cart_screen.dart';
 import 'package:flutter/material.dart';
 
 class CustomerHomePage extends StatefulWidget {
@@ -10,10 +8,9 @@ class CustomerHomePage extends StatefulWidget {
 class _CustomerHomePageState extends State<CustomerHomePage> {
   int _selectedIndex = 0;
 
-  // Define the pages for Home, Cart, and Profile
   final List<Widget> _pages = [
     HomeScreen(),
-    CartScreen(),
+    ProfileScreen(),
     ProfileScreen(),
   ];
 
@@ -52,121 +49,106 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
   }
 }
 
-// Home Screen
 class HomeScreen extends StatelessWidget {
+  final List<Map<String, String>> foodItems = [
+    {
+      'name': 'Pizza',
+      'price': '10.99',
+      'imageUrl': 'assets/image/pizza.png',
+    },
+    {
+      'name': 'Burger',
+      'price': '8.99',
+      'imageUrl': 'assets/image/burger.png',
+    },
+    {
+      'name': 'Cold Drink',
+      'price': '2.99',
+      'imageUrl': 'assets/image/cold_drinks.png',
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Customer Home Page',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title: const Text('Customer Home Page', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),),
         backgroundColor: Colors.deepOrangeAccent,
         centerTitle: true,
         elevation: 0,
       ),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('foods').snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
+      body: GridView.builder(
+        padding: const EdgeInsets.all(16.0),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 16.0,
+          mainAxisSpacing: 16.0,
+          childAspectRatio: 2 / 3,
+        ),
 
-          final data = snapshot.data?.docs ?? [];
-          return GridView.builder(
-            padding: const EdgeInsets.all(16.0),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16.0,
-              mainAxisSpacing: 16.0,
-              childAspectRatio: 2 / 3,
+        itemCount: foodItems.length,
+        itemBuilder: (context, index) {
+          final food = foodItems[index];
+          return Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
             ),
-            itemCount: data.length,
-            itemBuilder: (context, index) {
-              final food = data[index].data() as Map<String, dynamic>;
-              return Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+            elevation: 5,
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+
+
+                Expanded(
+                  flex: 8,
+                  child: Image.asset(
+                    food['imageUrl']!,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                  ),
                 ),
-                elevation: 5,
-                clipBehavior: Clip.antiAlias,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      flex: 8,
-                      child: Image.network(
-                        food['imageUrl'],
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                  (loadingProgress.expectedTotalBytes ?? 1)
-                                  : null,
-                            ),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) => const Center(
-                          child: Icon(Icons.broken_image, size: 50, color: Colors.red),
-                        ),
-                      ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  child: Text(
+                    food['name']!,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                      child: Text(
-                        food['name'],
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text(
-                        '\$${food['price']}',
-                        style: const TextStyle(
-                          color: Colors.green,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          // Add order functionality here
-                        },
-                        icon: const Icon(Icons.shopping_cart, size: 18),
-                        label: const Text('Order'),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          backgroundColor: Colors.deepOrangeAccent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              );
-            },
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    '\$${food['price']}',
+                    style: const TextStyle(
+                      color: Colors.green,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton.icon(
+                    onPressed: () {},
+                    icon: const Icon(Icons.shopping_cart, size: 18),
+                    label: const Text('Order'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      backgroundColor: Colors.deepOrangeAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           );
         },
       ),
@@ -174,10 +156,6 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-// Cart Screen
-
-
-// Profile Screen
 class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -196,3 +174,5 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 }
+
+

@@ -1,7 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:final_year_food_project/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'login_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -14,6 +14,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -24,51 +25,45 @@ class _SignUpScreenState extends State<SignUpScreen> {
     ScaffoldMessenger.of(context).showSnackBar(snackbar);
   }
 
-  Future<void> signUpWithEmailAndPassword(
-      String email, String password, String name) async {
+  Future<void> signUpWithEmailAndPassword(String email, String password, String name) async {
     try {
       setState(() {
         isLoading = true;
       });
-      print("created");
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LogInScreen()),
-      );
-      UserCredential userCredential = await _auth
-          .createUserWithEmailAndPassword(email: email, password: password);
 
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       await userCredential.user?.updateDisplayName(name);
-      setState(() {
-        isLoading = false;
+
+      await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).set({
+        'name': name,
+        'email': email,
       });
-      print("agaain");
+
+      showSnackBar("Registration successful!");
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LogInScreen()),
       );
-
     } on FirebaseAuthException catch (e) {
-      // Show error if registration fails
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Registration Failed"),
+            title: const Text("Registration Failed"),
             content: Text(e.message ?? "An error occurred."),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text("OK"),
+                child: const Text("OK"),
               ),
             ],
           );
         },
       );
     } finally {
-
       setState(() {
         isLoading = false;
       });
@@ -78,185 +73,208 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-backgroundColor: Colors.yellow,
-      ),
-      body: Stack(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              color:Colors.yellow,
-
-            ),
+      body: SingleChildScrollView(
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Colors.black,
           ),
-          SingleChildScrollView(
-            child: SizedBox(
-              height: 1000,
-              child: Column(
-                children: [
-                  SizedBox(height: 50,),
-                  Image(image: AssetImage('assets/image/diet.png'),height: 150,width: 150,),
-                  SizedBox(height: 30,),
-
-
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(33.0, 10, 30, 10),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Column(
-                        children: [
-                          Text(
-                            "Registration",
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'In password section use combination of Lowercase, Uppercase, Number and Special characters',
-                            style: TextStyle(fontSize: 13, color: Colors.black38),
-                          ),
-                        ],
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(height: 30),
+              const Text("FoodCart", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 25)),
+              const SizedBox(height: 10),
+              const Image(
+                image: AssetImage('assets/image/diet.png'),
+                height: 150,
+                width: 150,
+              ),
+              const SizedBox(height: 30),
+              const Center(
+                child: Text(
+                  "Registration",
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+              ),
+              const SizedBox(height: 30),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 10,
+                        offset: const Offset(0, 5),
                       ),
-                    ),
+                    ],
                   ),
-                  Form(
+                  padding: const EdgeInsets.all(20),
+                  child: Form(
                     key: _formKey,
                     child: Column(
                       children: [
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(28, 10, 28, 10),
-                          child: TextFormField(
-                            controller: emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              labelText: 'Email',
-                              floatingLabelStyle: TextStyle(
-                                color: Color.fromRGBO(147, 18, 18, 1.0),
-                              ),
-                              hintText: '',
+                        TextFormField(
+                          controller: nameController,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: 'Full Name',
+                            labelStyle: const TextStyle(color: Colors.white),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
                             ),
-                            validator: (String? value) {
-                              if (value?.trim().isEmpty ?? true) {
-                                return 'Enter an email';
-                              }
-
-                              bool emailValid = RegExp(
-                                  r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
-                                  .hasMatch(value!);
-                              if (!emailValid) {
-                                return 'Enter a valid email';
-                              }
-
-                              return null;
-                            },
+                            filled: true,
+                            fillColor: Colors.white.withOpacity(0.1),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                          validator: (String? value) {
+                            if (value?.trim().isEmpty ?? true) {
+                              return 'Enter your name';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          controller: emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: 'Email',
+                            labelStyle: const TextStyle(color: Colors.white),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            filled: true,
+                            fillColor: Colors.white.withOpacity(0.1),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                          validator: (String? value) {
+                            if (value?.trim().isEmpty ?? true) {
+                              return 'Enter an email';
+                            }
+                            bool emailValid = RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$').hasMatch(value!);
+                            if (!emailValid) {
+                              return 'Enter a valid email';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          controller: passwordController,
+                          obscureText: true,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            labelStyle: const TextStyle(color: Colors.white),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            filled: true,
+                            fillColor: Colors.white.withOpacity(0.1),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                          validator: (String? value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Enter a password';
+                            }
+                            if (value.length < 6) {
+                              return 'Enter a password with more than 6 characters';
+                            }
+                            bool passwordRegex = RegExp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$&*~]).{6,}$').hasMatch(value);
+                            if (!passwordRegex) {
+                              return 'Enter a strong password';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 30),
+                        TextFormField(
+                          controller: phoneController,
+                          keyboardType: TextInputType.phone,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: 'Phone',
+                            labelStyle: const TextStyle(color: Colors.white),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            filled: true,
+                            fillColor: Colors.white.withOpacity(0.1),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                          validator: (String? value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Enter phone number';
+                            }
+                            bool phoneRegex = RegExp(r'^01[3-9][0-9]{8}$').hasMatch(value!);
+                            if (!phoneRegex) {
+                              return 'Enter valid phone number';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 30),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              signUpWithEmailAndPassword(
+                                emailController.text.trim(),
+                                passwordController.text.trim(),
+                                nameController.text.trim(),
+                              );
+                            }
+                          },
+                          child: isLoading
+                              ? const CircularProgressIndicator(color: Colors.black)
+                              : const Text(
+                            "Register",
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            backgroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 50),
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(28, 10, 28, 10),
-                          child: TextFormField(
-                            controller: nameController,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              labelText: 'Full Name',
-                              floatingLabelStyle: TextStyle(
-                                color: Color.fromRGBO(147, 18, 18, 1.0),
-                              ),
-                              hintText: '',
-                            ),
-                            validator: (String? value) {
-                              if (value?.trim().isEmpty ?? true) {
-                                return 'Enter your name';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(28, 10, 28, 10),
-                          child: TextFormField(
-                            controller: passwordController,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              labelText: 'Password',
-                              floatingLabelStyle: TextStyle(
-                                color: Color.fromRGBO(147, 18, 18, 1.0),
-                              ),
-                              hintText: '',
-                            ),
-                            validator: (String? value) {
-                              // Check if value is null or empty
-                              if (value == null || value.isEmpty) {
-                                return 'Enter a password';
-                              }
-
-                              // Check length only if value is not null
-                              if (value.length < 6) {
-                                return 'Enter a password with more than 6 characters';
-                              }
-
-                              // Regex to validate password
-                              bool passwordRegex = RegExp(
-                                  r'^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$&*~]).{6,}$')
-                                  .hasMatch(value);  // value is non-null here
-
-                              if (!passwordRegex) {
-                                return 'Enter a strong password';
-                              }
-
-                              return null;  // If everything is valid
-                            },
-                          ),
-                        ),
-
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(left: 20,right: 20),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                signUpWithEmailAndPassword(
-                                  emailController.text.trim(),
-                                  passwordController.text.trim(),
-                                  nameController.text.trim(),
-                                );
-                              }
-                            },
-                            child: isLoading
-                                ? CircularProgressIndicator(
-                              color: Colors.black,
-                            )
-                                : Text("Register",style: TextStyle(
-                              color: Colors.black,fontWeight: FontWeight.bold,fontSize: 20
-                            ),),
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              elevation: 4.0,
-                              backgroundColor:Colors.white,
-                              fixedSize: Size(355.0, 60.0),
-                            ),
+                        const SizedBox(height: 15),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => LogInScreen()),
+                            );
+                          },
+                          child: const Text(
+                            "Already have an account? Log in",
+                            style: TextStyle(color: Colors.white70),
                           ),
                         ),
                       ],
                     ),
                   ),
-
-                ],
+                ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
