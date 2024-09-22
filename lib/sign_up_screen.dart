@@ -85,7 +85,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const Text("FoodCart", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 25)),
               const SizedBox(height: 10),
               const Image(
-                image: AssetImage('assets/image/diet.png'),
+                image: AssetImage('assets/image/foodcart.jpg'),
                 height: 150,
                 width: 150,
               ),
