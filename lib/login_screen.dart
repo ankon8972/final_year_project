@@ -1,4 +1,5 @@
 import 'package:final_year_food_project/home_page.dart';
+import 'package:final_year_food_project/verification/forgot_password.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -216,6 +217,15 @@ class _LogInScreenState extends State<LogInScreen> {
                               ),
                             ),
                             const SizedBox(height: 15),
+                            TextButton(onPressed: (){
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ForgotPassword()),
+                              );
+                            }, child: Text("Forgot Password? Reset your password",style: TextStyle(
+                              color: Colors.white,
+                            ),)),
                             TextButton(
                               onPressed: () {
                                 Navigator.push(
