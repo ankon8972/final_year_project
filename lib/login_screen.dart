@@ -82,35 +82,7 @@ class _LogInScreenState extends State<LogInScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(height: 50),
-                  Text("FoodCart",style: TextStyle(
-                    color: Colors.white,fontWeight: FontWeight.bold,fontSize: 30
-                  ),),
-                  const SizedBox(height: 20),
-                  const Image(
-                    image: AssetImage('assets/image/foodcart.jpg'),
-                    height: 150,
-                    width: 150,
-                  ),
-                  const SizedBox(height: 30),
-                  Center(
-                    child: Column(
-                      children: const [
-                        Text(
-                          "Welcome Back",
-                          style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'Please log in to continue',
-                          style: TextStyle(fontSize: 14, color: Colors.white70),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 30),
+
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Container(

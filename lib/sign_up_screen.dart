@@ -73,208 +73,200 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.black,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(height: 30),
-              const Text("FoodCart", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 25)),
-              const SizedBox(height: 10),
-              const Image(
-                image: AssetImage('assets/image/foodcart.jpg'),
-                height: 150,
-                width: 150,
-              ),
-              const SizedBox(height: 30),
-              const Center(
-                child: Text(
-                  "Registration",
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
-                ),
-              ),
-              const SizedBox(height: 30),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              color: Colors.black,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+       SizedBox(height: 100,),
+
+                  const SizedBox(height: 30),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  padding: const EdgeInsets.all(20),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          controller: nameController,
-                          style: const TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            labelText: 'Full Name',
-                            labelStyle: const TextStyle(color: Colors.white),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
+                      padding: const EdgeInsets.all(20),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            TextFormField(
+                              controller: nameController,
+                              style: const TextStyle(color: Colors.white),
+                              decoration: InputDecoration(
+                                labelText: 'Full Name',
+                                labelStyle: const TextStyle(color: Colors.white),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                filled: true,
+                                fillColor: Colors.white.withOpacity(0.1),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(color: Colors.white),
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                              ),
+                              validator: (String? value) {
+                                if (value?.trim().isEmpty ?? true) {
+                                  return 'Enter your name';
+                                }
+                                return null;
+                              },
                             ),
-                            filled: true,
-                            fillColor: Colors.white.withOpacity(0.1),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.white),
-                              borderRadius: BorderRadius.circular(10.0),
+                            const SizedBox(height: 20),
+                            TextFormField(
+                              controller: emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              style: const TextStyle(color: Colors.white),
+                              decoration: InputDecoration(
+                                labelText: 'Email',
+                                labelStyle: const TextStyle(color: Colors.white),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                filled: true,
+                                fillColor: Colors.white.withOpacity(0.1),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(color: Colors.white),
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                              ),
+                              validator: (String? value) {
+                                if (value?.trim().isEmpty ?? true) {
+                                  return 'Enter an email';
+                                }
+                                bool emailValid = RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$').hasMatch(value!);
+                                if (!emailValid) {
+                                  return 'Enter a valid email';
+                                }
+                                return null;
+                              },
                             ),
-                          ),
-                          validator: (String? value) {
-                            if (value?.trim().isEmpty ?? true) {
-                              return 'Enter your name';
-                            }
-                            return null;
-                          },
+                            const SizedBox(height: 20),
+                            TextFormField(
+                              controller: passwordController,
+                              obscureText: true,
+                              style: const TextStyle(color: Colors.white),
+                              decoration: InputDecoration(
+                                labelText: 'Password',
+                                labelStyle: const TextStyle(color: Colors.white),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                filled: true,
+                                fillColor: Colors.white.withOpacity(0.1),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(color: Colors.white),
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                              ),
+                              validator: (String? value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Enter a password';
+                                }
+                                if (value.length < 6) {
+                                  return 'Enter a password with more than 6 characters';
+                                }
+                                bool passwordRegex = RegExp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$&*~]).{6,}$').hasMatch(value);
+                                if (!passwordRegex) {
+                                  return 'Enter a strong password';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 30),
+                            TextFormField(
+                              controller: phoneController,
+                              keyboardType: TextInputType.phone,
+                              style: const TextStyle(color: Colors.white),
+                              decoration: InputDecoration(
+                                labelText: 'Phone',
+                                labelStyle: const TextStyle(color: Colors.white),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                filled: true,
+                                fillColor: Colors.white.withOpacity(0.1),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(color: Colors.white),
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                              ),
+                              validator: (String? value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Enter phone number';
+                                }
+                                bool phoneRegex = RegExp(r'^01[3-9][0-9]{8}$').hasMatch(value!);
+                                if (!phoneRegex) {
+                                  return 'Enter valid phone number';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 30),
+                            ElevatedButton(
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  signUpWithEmailAndPassword(
+                                    emailController.text.trim(),
+                                    passwordController.text.trim(),
+                                    nameController.text.trim(),
+                                  );
+                                }
+                              },
+                              child: isLoading
+                                  ? const CircularProgressIndicator(color: Colors.black)
+                                  : const Text(
+                                "Register",
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                backgroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 50),
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => LogInScreen()),
+                                );
+                              },
+                              child: const Text(
+                                "Already have an account? Log in",
+                                style: TextStyle(color: Colors.white70),
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 20),
-                        TextFormField(
-                          controller: emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          style: const TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            labelText: 'Email',
-                            labelStyle: const TextStyle(color: Colors.white),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            filled: true,
-                            fillColor: Colors.white.withOpacity(0.1),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.white),
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
-                          validator: (String? value) {
-                            if (value?.trim().isEmpty ?? true) {
-                              return 'Enter an email';
-                            }
-                            bool emailValid = RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$').hasMatch(value!);
-                            if (!emailValid) {
-                              return 'Enter a valid email';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 20),
-                        TextFormField(
-                          controller: passwordController,
-                          obscureText: true,
-                          style: const TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            labelText: 'Password',
-                            labelStyle: const TextStyle(color: Colors.white),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            filled: true,
-                            fillColor: Colors.white.withOpacity(0.1),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.white),
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
-                          validator: (String? value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Enter a password';
-                            }
-                            if (value.length < 6) {
-                              return 'Enter a password with more than 6 characters';
-                            }
-                            bool passwordRegex = RegExp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$&*~]).{6,}$').hasMatch(value);
-                            if (!passwordRegex) {
-                              return 'Enter a strong password';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 30),
-                        TextFormField(
-                          controller: phoneController,
-                          keyboardType: TextInputType.phone,
-                          style: const TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            labelText: 'Phone',
-                            labelStyle: const TextStyle(color: Colors.white),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            filled: true,
-                            fillColor: Colors.white.withOpacity(0.1),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.white),
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
-                          validator: (String? value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Enter phone number';
-                            }
-                            bool phoneRegex = RegExp(r'^01[3-9][0-9]{8}$').hasMatch(value!);
-                            if (!phoneRegex) {
-                              return 'Enter valid phone number';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 30),
-                        ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              signUpWithEmailAndPassword(
-                                emailController.text.trim(),
-                                passwordController.text.trim(),
-                                nameController.text.trim(),
-                              );
-                            }
-                          },
-                          child: isLoading
-                              ? const CircularProgressIndicator(color: Colors.black)
-                              : const Text(
-                            "Register",
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            backgroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 50),
-                          ),
-                        ),
-                        const SizedBox(height: 15),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (context) => LogInScreen()),
-                            );
-                          },
-                          child: const Text(
-                            "Already have an account? Log in",
-                            style: TextStyle(color: Colors.white70),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
