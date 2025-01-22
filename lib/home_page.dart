@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:final_year_food_project/cart_page/cart_page.dart';
 
+
 class CustomerHomePage extends StatefulWidget {
   @override
   _CustomerHomePageState createState() => _CustomerHomePageState();
@@ -57,7 +58,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Cart'),
         ],
-        selectedItemColor: Colors.deepOrangeAccent,
+        selectedItemColor: Colors.red,
         unselectedItemColor: Colors.grey,
         showUnselectedLabels: true,
       ),
@@ -74,9 +75,9 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Food Menu'),
+        title: Text('FoodCart',style: TextStyle(color: Colors.white,fontSize:25,fontWeight: FontWeight.bold),),
         centerTitle: true,
-        backgroundColor: Colors.deepOrangeAccent,
+        backgroundColor: Colors.red,
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance.collection('foods').snapshots(),
@@ -101,6 +102,7 @@ class HomeScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final food = data[index].data() as Map<String, dynamic>;
               return Card(
+                color: Colors.red[100],
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                 elevation: 5,
                 clipBehavior: Clip.antiAlias,
@@ -113,7 +115,7 @@ class HomeScreen extends StatelessWidget {
                         food['imageUrl'],
                         fit: BoxFit.cover,
                         width: double.infinity,
-                        errorBuilder: (_, __, ___) => Icon(Icons.broken_image, size: 50, color: Colors.red),
+
                       ),
                     ),
                     Padding(
@@ -121,8 +123,8 @@ class HomeScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(food['name'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                          Text('\$${food['price']}', style: TextStyle(color: Colors.green, fontSize: 16, fontWeight: FontWeight.bold)),
+                          Text(food['name'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18,color: Colors.black)),
+                          Text('\$${food['price']}', style: TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ),
@@ -136,11 +138,11 @@ class HomeScreen extends StatelessWidget {
                             SnackBar(content: Text("${food['name']} added to cart!")),
                           );
                         },
-                        icon: Icon(Icons.add_shopping_cart, size: 18),
-                        label: Text('Add to Cart'),
+                        icon: Icon(Icons.add_shopping_cart, size: 20,color: Colors.white,),
+                        label: Text('Add to Cart',style: TextStyle(color: Colors.white),),
                         style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          backgroundColor: Colors.deepOrangeAccent,
+                          padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
+                          backgroundColor: Colors.red,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                         ),
                       ),

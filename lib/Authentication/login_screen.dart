@@ -45,7 +45,7 @@ class _LogInScreenState extends State<LogInScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text("Login Failed"),
+            title: const Text("Login Failed!!!"),
             content: Text(e.message ?? "An error occurred."),
             actions: [
               TextButton(

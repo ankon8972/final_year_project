@@ -30,7 +30,7 @@ class OrderHistoryScreen extends StatelessWidget {
 
           final data = snapshot.data?.docs ?? [];
           if (data.isEmpty) {
-            return Center(child: Text('You have no past orders.'));
+            return Center(child: Text('You have no past orders'));
           }
 
           return ListView.builder(

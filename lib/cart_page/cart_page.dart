@@ -1,15 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class CartPage extends StatelessWidget {
+class CartPage extends StatefulWidget {
   final List<Map<String, dynamic>> cartItems;
   final Function(int) removeFromCart;
   final Function clearCart;
 
   CartPage({required this.cartItems, required this.removeFromCart, required this.clearCart});
 
+  @override
+  State<CartPage> createState() => _CartPageState();
+}
+
+class _CartPageState extends State<CartPage> {
   Future<void> checkout(BuildContext context) async {
-    if (cartItems.isEmpty) {
+    if (widget.cartItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Your cart is empty!")),
       );
@@ -18,8 +23,8 @@ class CartPage extends StatelessWidget {
 
     try {
       await FirebaseFirestore.instance.collection('orderedItems').add({
-        'items': cartItems,
-        'totalPrice': cartItems.fold(0.0, (sum, item) {
+        'items': widget.cartItems,
+        'totalPrice': widget.cartItems.fold(0.0, (sum, item) {
           final price = item['price'];
           if (price is num) {
             return sum + price;
@@ -30,7 +35,10 @@ class CartPage extends StatelessWidget {
         'timestamp': FieldValue.serverTimestamp(),
       });
 
-      clearCart();
+      widget.clearCart();
+      setState(() {
+
+      });
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Order placed successfully!")),
@@ -77,6 +85,10 @@ class CartPage extends StatelessWidget {
                         icon: Icon(Icons.delete, color: Colors.red),
                         onPressed: () async {
                           await FirebaseFirestore.instance.collection('orderedItems').doc(order.id).delete();
+                          setState(() {
+                            Navigator.of(context).pop();
+                            showOrderHistoryDialog(context);
+                          });
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text("Order deleted!")),
                           );
@@ -103,29 +115,49 @@ class CartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double totalPrice = cartItems.fold(0, (sum, item) => sum + (item['price'] as num));
+    double totalPrice = widget.cartItems.fold(0, (sum, item) => sum + (item['price'] as num));
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Your Cart'),
+        title: Text('Cart Items',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 25),),
         centerTitle: true,
-        backgroundColor: Colors.deepOrange,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.history),
-            onPressed: () => showOrderHistoryDialog(context),
-          ),
-        ],
+        backgroundColor: Colors.red,
+
       ),
-      body: cartItems.isEmpty
-          ? Center(child: Text('Your cart is empty.', style: TextStyle(fontSize: 18)))
+      body: widget.cartItems.isEmpty
+          ? Center(child: Column(
+            children: [
+              Container(
+                margin: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(10),
+
+                ),
+                child: TextButton(onPressed: () => showOrderHistoryDialog(context),
+                    child: Text("View Order",style: TextStyle(color: Colors.white),)),
+              ),
+              Text('Your cart is empty.', style: TextStyle(fontSize: 18)),
+            ],
+          ))
           : Column(
         children: [
+
+          Container(
+            margin: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(10),
+
+              ),
+              child: TextButton(onPressed: () => showOrderHistoryDialog(context),
+                  child: Text("View Order",style: TextStyle(color: Colors.white),)),
+          ),
           Expanded(
             child: ListView.builder(
-              itemCount: cartItems.length,
+              itemCount: widget.cartItems.length,
               itemBuilder: (context, index) {
-                final item = cartItems[index];
+                final item = widget.cartItems[index];
                 return Card(
                   margin: EdgeInsets.all(10),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -147,7 +179,10 @@ class CartPage extends StatelessWidget {
                     trailing: IconButton(
                       icon: Icon(Icons.delete, color: Colors.red),
                       onPressed: () {
-                        removeFromCart(index);
+                        widget.removeFromCart(index);
+                        setState(() {
+
+                        });
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("${item['name']} removed from cart!")),
                         );
@@ -164,14 +199,14 @@ class CartPage extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Total: \$${totalPrice.toStringAsFixed(2)}",
+                Text("Total : \$${totalPrice.toStringAsFixed(2)}",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 ElevatedButton(
                   onPressed: () => checkout(context),
-                  child: Text("Checkout"),
+                  child: Text("Checkout",style: TextStyle(color: Colors.white),),
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    backgroundColor: Colors.deepOrange,
+                    backgroundColor: Colors.red,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                   ),
                 ),
